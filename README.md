@@ -1,3 +1,19 @@
+# Figma Plugin: Contrast Description
+
+*Note this plugin is a WIP*
+
+This plugin allows you to quickly label your local color styles with color contrast guidelines so it's clear which colors are accessible with different text colors. For example, is your brand color accessible with white text, black text, or neither?
+
+Here is the plan for building this plugin:
+- [x]  Running a plugin adds a generic description to all local color styles
+- [ ]  Check the color contrast of each color style against #FFFFFF and #000000
+- [ ]  Allow the user to input their own values for white and black text to check color contrast
+- [ ]  Allow the user to input any number of color values to be added to the description
+
+---
+
+## Setup
+
 Below are the steps to get your plugin running. You can also find instructions at:
 
   https://www.figma.com/plugin-docs/setup/
@@ -38,3 +54,9 @@ We recommend writing TypeScript code using Visual Studio code:
     you reopen Visual Studio Code.
 
 That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+
+## About
+
+Hello, I'm Andrew, a product designer at thoughtbot. I've made it a habit of always recording WCAG color contrast for the colors defined in each project. This helps myself and others remember which colors are accessible with different text colors. This also points out colors that might not be accessible with any text or only with text of a certain size (AA Large).
+
+I'm building this plugin in the open, feel free to follow along!
