@@ -1,0 +1,40 @@
+<h2>Contrast</h2>
+<!-- <p>Count: <input id="count" value="5"></p>
+<button id="create">Create</button>
+<button id="cancel">Cancel</button>
+<script>
+
+document.getElementById('create').onclick = () => {
+  const textbox = document.getElementById('count');
+  const count = parseInt(textbox.value, 10);
+  parent.postMessage({ pluginMessage: { type: 'create-rectangles', count } }, '*')
+}
+
+document.getElementById('cancel').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+}
+
+</script> -->
+
+<ul id="styles-list"></ul>
+<script>
+  // Select the ul tag
+  const stylesListElement = document.getElementById("styles-list");
+
+  // Handle incoming message from code.ts
+  onmessage = ({ data: { pluginMessage } }) => {
+    const messageType = pluginMessage.type;
+    // React only to "render" message
+    if (messageType === "render") {
+      // Get an array of style names from the message
+      const styleNames = pluginMessage.styleNames;
+      // Turn array of names into a single HTML string with li tags
+      const rowHTML = styleNames.reduce(
+        (resultString, styleName) => resultString + `<li>${styleName}</li>`,
+        ""
+      );
+      // Insert li tags inside the ul
+      stylesListElement.innerHTML = rowHTML;
+    }
+  };
+</script>
