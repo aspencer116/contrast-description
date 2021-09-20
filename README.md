@@ -2,7 +2,9 @@
 
 *Note this plugin is a WIP*
 
-This plugin allows you to quickly label your local color styles with color contrast guidelines so it's clear which colors are accessible with different text colors. For example, is your brand color accessible with white text, black text, or neither?
+![color-contrast](https://user-images.githubusercontent.com/19694054/134062490-1220ef25-cd29-4c9d-9e3a-e99c050517d9.png)
+
+The goal of this plugin is to make it easier to know if your color style pairings pass [WCAG](https://www.w3.org/WAI/WCAG2AAA-Conformance) (Web Content Accessibility Guidelines) color contrast guidelines. It automatically adds information on color contrast to the description of each color style in your project. This helps everyone working on the file to know which color pairs are safe to use by providing contextual information on color contrast directly in the Figma UI.
 
 Here is the plan for building this plugin:
 - [x]  Running a plugin adds a generic description to all local color styles
