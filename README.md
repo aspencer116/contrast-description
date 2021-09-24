@@ -16,24 +16,28 @@ Here is the plan for building this plugin:
 
 ## Setup
 
-Below are the steps to get your plugin running. You can also find instructions at:
+Below are the steps to get the plugin running. You can also find instructions at:
 
-  https://www.figma.com/plugin-docs/setup/
+https://www.figma.com/plugin-docs/setup/
 
 This plugin template uses Typescript and NPM, two standard tools in creating JavaScript applications.
 
 First, download Node.js which comes with NPM. This will allow you to install TypeScript and other
 libraries. You can find the download link here:
 
-  https://nodejs.org/en/download/
+https://nodejs.org/en/download/
 
 Next, install TypeScript using the command:
 
-  npm install -g typescript
+```
+npm install -g typescript
+```
 
 Finally, in the directory of your plugin, get the latest type definitions for the plugin API by running:
 
-  npm install --save-dev @figma/plugin-typings
+```
+npm install --save-dev @figma/plugin-typings
+```
 
 If you are familiar with JavaScript, TypeScript will look very familiar. In fact, valid JavaScript code
 is already valid Typescript code.
@@ -59,6 +63,8 @@ That's it! Visual Studio Code will regenerate the JavaScript file every time you
 
 ## About
 
-Hello, I'm Andrew, a product designer at thoughtbot. I've made it a habit of always recording WCAG color contrast for the colors defined in each project. This helps myself and others remember which colors are accessible with different text colors. This also points out colors that might not be accessible with any text or only with text of a certain size (AA Large).
+Hello, I'm Andrew, a product designer at [thoughtbot](https://thoughtbot.com/). I've made it a habit of always recording WCAG color contrast for the colors defined in each project. This helps myself and others remember which colors are accessible with different text colors. This also points out colors that might not be accessible with any text or only with text of a certain size (AA Large).
 
 I'm building this plugin in the open, feel free to follow along!
+
+[Website](https://andrew-spencer.com/) | [Dribbble](https://dribbble.com/iam_aspencer)
