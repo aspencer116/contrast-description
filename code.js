@@ -1,7 +1,9 @@
 let foregroundColor
 let foregroundAlpha
-let backgroundColor
+let backgroundColorLight
+let backgroundColorDark
 
+// Convert the rgb values from fractions to numbers between 0 and 255
 function getRGB({ r, g, b }) {
     const rgbColorArray = [r, g, b].map(channel => Math.round(channel * 255))
     return rgbColorArray
@@ -30,16 +32,20 @@ function overlay(foreground, alpha, backgound) {
     return overlaid
 }
 
+// This is where the ✨ happens
 function calculateContrast(foreground, alpha, background) {
     if (alpha < 1) {
         foreground = overlay(foreground, alpha, background)
     }
+
     const foregroundLuminance = calculateLuminance(foreground) + 0.05
     const backgroundLuminance = calculateLuminance(background) + 0.05
     let contrast = foregroundLuminance / backgroundLuminance
+
     if (backgroundLuminance > foregroundLuminance) {
-    contrast = 1 / contrast
+        contrast = 1 / contrast
     }
+
     // round to two decimal places
     contrast = Math.floor(contrast * 100) / 100
     return contrast
@@ -50,8 +56,6 @@ const styles = figma.getLocalPaintStyles();
 
 // Loop through all the color styles in the file
 for (let i = 0; i < styles.length; i++) {
-    // TEST change the description. Delete this later
-
     // Get the color style type for this color style (solid, gradient, image, etc)
     const type = styles[i].paints[0].type
 
@@ -59,14 +63,18 @@ for (let i = 0; i < styles.length; i++) {
     if (type === 'SOLID') {
         foregroundColor = getRGB(styles[i].paints[0].color)
         foregroundAlpha = styles[i].paints[0].opacity
-        backgroundColor = getRGB({r: 1, g: 1, b: 1})
+        backgroundColorLight = getRGB({r: 1, g: 1, b: 1})
+        backgroundColorDark = getRGB({r: 0, g: 0, b: 0})
 
-        const contrast = calculateContrast(foregroundColor, foregroundAlpha, backgroundColor)
+        const contrastWithLight = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorLight)
+        const contrastWithDark = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorDark)
 
-        styles[i].description = `Contrast with white: ` + contrast
+        styles[i].description = 
+            `Contrast with white: ` + contrastWithLight + `
+Contrast with black: ` + contrastWithDark
     }
     else {
-        styles[i].description = `Could not determine contrast ratios`
+        styles[i].description = `Contrast not available`
     }
 }
 
