@@ -51,6 +51,26 @@ function calculateContrast(foreground, alpha, background) {
     return contrast
 }
 
+function getContrastScores(contrast) {
+    let score
+
+    switch (true) {
+      case contrast > 7:
+        score = 'AAA'
+        break
+      case contrast > 4.5:
+        score = 'AA'
+        break
+      case contrast > 3:
+        score = 'AA Large'
+        break
+      default:
+        score = 'FAIL'
+        break
+    }
+    return score
+  }
+
 // Find all the color styles that currently exist in the file
 const styles = figma.getLocalPaintStyles();
 
@@ -67,11 +87,14 @@ for (let i = 0; i < styles.length; i++) {
         backgroundColorDark = getRGB({r: 0, g: 0, b: 0})
 
         const contrastWithLight = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorLight)
+        const scoresLight = getContrastScores(contrastWithLight)
         const contrastWithDark = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorDark)
+        const scoresDark = getContrastScores(contrastWithDark)
 
         styles[i].description = 
-            `Contrast with white: ` + contrastWithLight + `
-Contrast with black: ` + contrastWithDark
+            `-- Color Contrast --
+White: ` + scoresLight + ` (`+ contrastWithLight + `)
+Black: ` + scoresDark + ` (` + contrastWithDark + `)`
     }
     else {
         styles[i].description = `Contrast not available`
