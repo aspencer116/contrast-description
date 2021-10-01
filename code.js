@@ -1,3 +1,7 @@
+let foregroundColor
+let foregroundAlpha
+let backgroundColor
+
 function getRGB({ r, g, b }) {
     const rgbColorArray = [r, g, b].map(channel => Math.round(channel * 255))
     return rgbColorArray
@@ -17,7 +21,15 @@ function calculateLuminance(color) {
         gammaCorrectedRGB[2] * 0.0722
     return luminance
 }
-  
+
+// If a color has opacity, calculate a solid color to use for the contrast calculation
+function overlay(foreground, alpha, backgound) {
+    const overlaid = foreground.map((channel, i) =>
+      Math.round(channel * alpha + backgound[i] * (1 - alpha))
+    )
+    return overlaid
+}
+
 function calculateContrast(foreground, alpha, background) {
     if (alpha < 1) {
         foreground = overlay(foreground, alpha, background)
@@ -45,11 +57,11 @@ for (let i = 0; i < styles.length; i++) {
 
     // Get only the solid color styles
     if (type === 'SOLID') {
-        const foregroundColor = getRGB(styles[i].paints[0].color)
-        const foregroundAlpha = styles[i].paints[0].opacity
-        const backgoundColor = getRGB({r: 1, g: 1, b: 1})
+        foregroundColor = getRGB(styles[i].paints[0].color)
+        foregroundAlpha = styles[i].paints[0].opacity
+        backgroundColor = getRGB({r: 1, g: 1, b: 1})
 
-        const contrast = calculateContrast(foregroundColor, foregroundAlpha, backgoundColor)
+        const contrast = calculateContrast(foregroundColor, foregroundAlpha, backgroundColor)
 
         styles[i].description = `Contrast with white: ` + contrast
     }
