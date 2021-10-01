@@ -36,35 +36,26 @@ function calculateContrast(foreground, alpha, background) {
 // Find all the color styles that currently exist in the file
 const styles = figma.getLocalPaintStyles();
 
-// The text description that we will add
-const description = `
-NEW CONTRAST
-🔲 Large AA (4.12)
-🔳 Large AA (4.48)`;
-
 // Loop through all the color styles in the file
 for (let i = 0; i < styles.length; i++) {
     // TEST change the description. Delete this later
-    styles[i].description = description;
 
     // Get the color style type for this color style (solid, gradient, image, etc)
     const type = styles[i].paints[0].type
 
     // Get only the solid color styles
     if (type === 'SOLID') {
-        console.log(styles[i].name)
-
         const foregroundColor = getRGB(styles[i].paints[0].color)
         const foregroundAlpha = styles[i].paints[0].opacity
         const backgoundColor = getRGB({r: 1, g: 1, b: 1})
 
         const contrast = calculateContrast(foregroundColor, foregroundAlpha, backgoundColor)
 
-        console.log('Contrast: ', contrast)
+        styles[i].description = `Contrast with white: ` + contrast
     }
     else {
-        console.log('not solid')
+        styles[i].description = `Could not determine contrast ratios`
     }
 }
 
-figma.closePlugin();
+figma.closePlugin()
