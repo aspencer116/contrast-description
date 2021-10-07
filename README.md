@@ -8,7 +8,7 @@ The goal of this plugin is to make it easier to know if your color style pairing
 
 Here is the plan for building this plugin:
 - [x]  Running a plugin adds a generic description to all local color styles
-- [ ]  Check the color contrast of each color style against #FFFFFF and #000000
+- [x]  Check the color contrast of each color style against #FFFFFF and #000000
 - [ ]  Allow the user to input their own values for white and black text to check color contrast
 - [ ]  Allow the user to input any number of color values to be added to the description
 
