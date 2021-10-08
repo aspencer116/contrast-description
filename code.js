@@ -78,9 +78,10 @@ const styles = figma.getLocalPaintStyles();
 for (let i = 0; i < styles.length; i++) {
     // Get the color style type for this color style (solid, gradient, image, etc)
     const type = styles[i].paints[0].type
+    const opacity = styles[i].paints[0].opacity
 
     // Get only the solid color styles
-    if (type === 'SOLID') {
+    if (type === 'SOLID' && opacity === 1 ) {
         foregroundColor = getRGB(styles[i].paints[0].color)
         foregroundAlpha = styles[i].paints[0].opacity
         backgroundColorLight = getRGB({r: 1, g: 1, b: 1})
@@ -92,12 +93,17 @@ for (let i = 0; i < styles.length; i++) {
         const scoresDark = getContrastScores(contrastWithDark)
 
         styles[i].description = 
-            `-- Color Contrast --
+            `Color contrast with...
 White: ` + scoresLight + ` (`+ contrastWithLight + `)
 Black: ` + scoresDark + ` (` + contrastWithDark + `)`
     }
+    else if (opacity < 1) {
+        styles[i].description = `Color contrast
+Unknown: opacity`
+    }
     else {
-        styles[i].description = `Contrast not available`
+        styles[i].description = `Color contrast
+Unknown: non-solid color`
     }
 }
 
