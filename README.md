@@ -1,6 +1,4 @@
-# Figma Plugin: Contrast Description
-
-*Note this plugin is a WIP*
+# BETA Figma Plugin: Contrast Description
 
 ![color-contrast](https://user-images.githubusercontent.com/19694054/134062490-1220ef25-cd29-4c9d-9e3a-e99c050517d9.png)
 
