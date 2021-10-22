@@ -73,6 +73,7 @@ function getContrastScores(contrast) {
 
 // Find all the color styles that currently exist in the file
 const styles = figma.getLocalPaintStyles();
+let success = 0;
 
 // Loop through all the color styles in the file
 for (let i = 0; i < styles.length; i++) {
@@ -96,6 +97,8 @@ for (let i = 0; i < styles.length; i++) {
             `Color contrast with...
 White: ` + scoresLight + ` (`+ contrastWithLight + `)
 Black: ` + scoresDark + ` (` + contrastWithDark + `)`
+
+        success = success + 1;
     }
     else if (opacity < 1) {
         styles[i].description = `Color contrast
@@ -106,5 +109,7 @@ Unknown: opacity`
 Unknown: non-solid color`
     }
 }
+
+figma.notify("Updated color contrast for " + success + " color styles! 🎉")
 
 figma.closePlugin()
