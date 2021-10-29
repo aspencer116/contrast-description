@@ -9,6 +9,21 @@ function getRGB({ r, g, b }) {
     return rgbColorArray
 }
 
+// Convert 6 digit HEX colors into RGB
+function HEXtoRGB(HEXcolor) {
+    if(HEXcolor.length != 6){
+        figma.notify("Plugin Failed: Please enter 6 digit HEX colors")
+    }
+
+    var aRgbHex = HEXcolor.match(/.{1,2}/g);
+    var aRgb = [
+        parseInt(aRgbHex[0], 16),
+        parseInt(aRgbHex[1], 16),
+        parseInt(aRgbHex[2], 16)
+    ];
+    return aRgb;
+}
+
 function calculateLuminance(color) {
     // Use this formula to calculate luminance https://www.w3.org/WAI/GL/wiki/Relative_luminance
     const normalizedColor = color.map(channel => channel / 255)
@@ -71,45 +86,58 @@ function getContrastScores(contrast) {
     return score
   }
 
-// Find all the color styles that currently exist in the file
-const styles = figma.getLocalPaintStyles();
-let success = 0;
+// Show the Figma plugin window
+figma.showUI(__html__)
 
-// Loop through all the color styles in the file
-for (let i = 0; i < styles.length; i++) {
-    // Get the color style type for this color style (solid, gradient, image, etc)
-    const type = styles[i].paints[0].type
-    const opacity = styles[i].paints[0].opacity
+// Send the color styles from the Figma UI
+figma.ui.onmessage = (colors) => {
+    // Find all the color styles that currently exist in the file
+    const styles = figma.getLocalPaintStyles();
+    let success = 0;
 
-    // Get only the solid color styles
-    if (type === 'SOLID' && opacity === 1 ) {
-        foregroundColor = getRGB(styles[i].paints[0].color)
-        foregroundAlpha = styles[i].paints[0].opacity
-        backgroundColorLight = getRGB({r: 1, g: 1, b: 1})
-        backgroundColorDark = getRGB({r: 0, g: 0, b: 0})
+    // Loop through all the color styles in the file
+    for (let i = 0; i < styles.length; i++) {
+        // Get the color style type for this color style (solid, gradient, image, etc)
+        const type = styles[i].paints[0].type
+        const opacity = styles[i].paints[0].opacity
 
-        const contrastWithLight = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorLight)
-        const scoresLight = getContrastScores(contrastWithLight)
-        const contrastWithDark = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorDark)
-        const scoresDark = getContrastScores(contrastWithDark)
+        // Get only the solid color styles
+        if (type === 'SOLID' && opacity === 1 ) {
+            foregroundColor = getRGB(styles[i].paints[0].color)
+            foregroundAlpha = styles[i].paints[0].opacity
+            backgroundColorLight = HEXtoRGB(colors.color1)
+            backgroundColorDark = HEXtoRGB(colors.color2)
 
-        styles[i].description = 
-            `Color contrast with...
-White: ` + scoresLight + ` (`+ contrastWithLight + `)
-Black: ` + scoresDark + ` (` + contrastWithDark + `)`
+            const contrastWithLight = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorLight)
+            const scoresLight = getContrastScores(contrastWithLight)
+            const contrastWithDark = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorDark)
+            const scoresDark = getContrastScores(contrastWithDark)
 
-        success = success + 1;
-    }
-    else if (opacity < 1) {
-        styles[i].description = `Color contrast
+            styles[i].description = 
+                `Color contrast with...
+    ` + colors.color1 + `: ` + scoresLight + ` (`+ contrastWithLight + `)
+    ` + colors.color2 + `: ` + scoresDark + ` (` + contrastWithDark + `)`
+
+            success = success + 1;
+        }
+        else if (opacity < 1) {
+            styles[i].description = `Color contrast
 Unknown: opacity`
-    }
-    else {
-        styles[i].description = `Color contrast
+        }
+        else {
+            styles[i].description = `Color contrast
 Unknown: non-solid color`
+        }
     }
+
+    figma.notify("Updated color contrast for " + success + " color styles! 🎉")
+
+    figma.closePlugin()
 }
 
-figma.notify("Updated color contrast for " + success + " color styles! 🎉")
+// figma.ui.onmessage = (cancel) => {
+//     figma.notify("Closed plugin")
 
-figma.closePlugin()
+//     figma.closePlugin()
+// }
+

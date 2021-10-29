@@ -1,22 +1,26 @@
-<h2>Contrast</h2>
-<!-- <p>Count: <input id="count" value="5"></p>
+<h1>List text colors</h1>
+<p>Contrast ratios for these colors will be added as descriptions to all color styles.</p>
+
+#<input id="color-1" value="FFFFFF"><br>
+#<input id="color-2" value="000000"><br>
+
 <button id="create">Create</button>
-<button id="cancel">Cancel</button>
+
 <script>
+  document.getElementById('create').onclick = () => {
+    const textbox1 = document.getElementById('color-1');
+    const color1 = textbox1.value;
+    const textbox2 = document.getElementById('color-2');
+    const color2 = textbox2.value;
 
-document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-rectangles', count } }, '*')
-}
+    parent.postMessage({ pluginMessage: { type: 'colors', color1, color2 } }, '*')
+  }
+</script>
 
-document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
-}
+<!-- <ul id="styles-list">
+  <h1>TEST</h1>
+</ul>
 
-</script> -->
-
-<ul id="styles-list"></ul>
 <script>
   // Select the ul tag
   const stylesListElement = document.getElementById("styles-list");
@@ -37,4 +41,4 @@ document.getElementById('cancel').onclick = () => {
       stylesListElement.innerHTML = rowHTML;
     }
   };
-</script>
+</script> -->
