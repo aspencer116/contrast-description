@@ -32,34 +32,18 @@
   }
 </style>
 
-<h1>List text colors</h1>
-<p>Contrast ratios for these colors will be added as descriptions to all color styles.</p>
+<h1>Select your text colors</h1>
+<p>Running the plugin will add color contrast ratio information for these colors to the description panel of all solid color styles.</p>
 
-#<input id="color-1" value="FFFFFF"><br>
-#<input id="color-2" value="000000"><br>
+<ul id="styles-list"></ul>
 
 <button id="create">Create</button>
-
-<script>
-  document.getElementById('create').onclick = () => {
-    const textbox1 = document.getElementById('color-1');
-    const color1 = textbox1.value;
-    const textbox2 = document.getElementById('color-2');
-    const color2 = textbox2.value;
-
-    parent.postMessage({ pluginMessage: { type: 'colors', color1, color2 } }, '*')
-  }
-</script>
-
-<!-- <ul id="styles-list">
-  <h1>TEST</h1>
-</ul>
 
 <script>
   // Select the ul tag
   const stylesListElement = document.getElementById("styles-list");
 
-  // Handle incoming message from code.ts
+  // Handle incoming message from code.js
   onmessage = ({ data: { pluginMessage } }) => {
     const messageType = pluginMessage.type;
     // React only to "render" message
@@ -68,11 +52,23 @@
       const styleNames = pluginMessage.styleNames;
       // Turn array of names into a single HTML string with li tags
       const rowHTML = styleNames.reduce(
-        (resultString, styleName) => resultString + `<li>${styleName}</li>`,
+        (resultString, styleName) => resultString + `<li><input type="checkbox" id="${styleName}"> ${styleName}</li>`,
         ""
       );
       // Insert li tags inside the ul
       stylesListElement.innerHTML = rowHTML;
     }
   };
-</script> -->
+
+  // Send selected colors to the code.js
+  document.getElementById('create').onclick = () => {
+    const selectedInputs = document.querySelectorAll('input[type="checkbox"]:checked');
+    let selectedColors = [];
+
+    for (let i = 0; i < selectedInputs.length; i++) {
+      selectedColors[i] = selectedInputs[i].getAttribute(`id`)
+    }
+
+    parent.postMessage({ pluginMessage: { type: 'selectedColors', selectedColors } }, '*')
+  }
+</script>

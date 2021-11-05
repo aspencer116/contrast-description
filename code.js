@@ -1,8 +1,3 @@
-let foregroundColor
-let foregroundAlpha
-let backgroundColorLight
-let backgroundColorDark
-
 // Convert the rgb values from fractions to numbers between 0 and 255
 function getRGB({ r, g, b }) {
     const rgbColorArray = [r, g, b].map(channel => Math.round(channel * 255))
@@ -70,74 +65,98 @@ function getContrastScores(contrast) {
     let score
 
     switch (true) {
-      case contrast > 7:
+        case contrast > 7:
         score = 'AAA'
         break
-      case contrast > 4.5:
+        case contrast > 4.5:
         score = 'AA'
         break
-      case contrast > 3:
+        case contrast > 3:
         score = 'AA Large'
         break
-      default:
+        default:
         score = 'FAIL'
         break
     }
     return score
-  }
+}
+
 
 // Show the Figma plugin window
 figma.showUI(__html__)
 
-// Send the color styles from the Figma UI
-figma.ui.onmessage = (colors) => {
-    // Find all the color styles that currently exist in the file
-    const styles = figma.getLocalPaintStyles();
-    let success = 0;
+// Find all the color styles that currently exist in the file
+const styles = figma.getLocalPaintStyles();
+let styleNames = [];
 
-    // Loop through all the color styles in the file
-    for (let i = 0; i < styles.length; i++) {
-        // Get the color style type for this color style (solid, gradient, image, etc)
-        const type = styles[i].paints[0].type
-        const opacity = styles[i].paints[0].opacity
+// Only send solid color styles that have no transparency since these are the only
+// values we can accurately determine color contrast for
+for (let i = 0; i < styles.length; i++) {
+    let type = styles[i].paints[0].type
+    let opacity = styles[i].paints[0].opacity
 
-        // Get only the solid color styles
-        if (type === 'SOLID' && opacity === 1 ) {
-            foregroundColor = getRGB(styles[i].paints[0].color)
-            foregroundAlpha = styles[i].paints[0].opacity
-            backgroundColorLight = HEXtoRGB(colors.color1)
-            backgroundColorDark = HEXtoRGB(colors.color2)
+    if (type === 'SOLID' && opacity === 1 ) {
+        styleNames.push(styles[i].name)
+    }
+}
 
-            const contrastWithLight = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorLight)
-            const scoresLight = getContrastScores(contrastWithLight)
-            const contrastWithDark = calculateContrast(foregroundColor, foregroundAlpha, backgroundColorDark)
-            const scoresDark = getContrastScores(contrastWithDark)
+// Send the color styles to the plugin UI
+figma.ui.postMessage({
+    type: "render",
+    styleNames,
+});
 
-            styles[i].description = 
-                `Color contrast with...
-    ` + colors.color1 + `: ` + scoresLight + ` (`+ contrastWithLight + `)
-    ` + colors.color2 + `: ` + scoresDark + ` (` + contrastWithDark + `)`
+// When an array of text color styles are returned...
+figma.ui.onmessage = (selectedColors) => {
+    let descriptionsAdded = 0;
 
-            success = success + 1;
-        }
-        else if (opacity < 1) {
-            styles[i].description = `Color contrast
-Unknown: opacity`
-        }
-        else {
-            styles[i].description = `Color contrast
-Unknown: non-solid color`
+    // Get just the local styles that are used as text colors
+    let textStyles = []
+
+    // Map the color names returned from the plugin UI to color style objects
+    for(let i = 0; i < selectedColors.selectedColors.length; i++) {
+        for(let x = 0; x < styles.length; x++) {
+            if( styles[x].name === selectedColors.selectedColors[i] ) {
+                textStyles.push(styles[x])
+            }
         }
     }
 
-    figma.notify("Updated color contrast for " + success + " color styles! 🎉")
+    let textColors = []
+    let backgroundColors = []
+    let contrast = []
+    let score = []
+
+    // Loop through all the color styles in the file
+    for(let i = 0; i < styles.length; i++) {
+        // Clear the current color style description
+        styles[i].description = `Color contrast unknown`
+
+        // Loop only solid colors with 100% opacity
+        if (styles[i].paints[0].type === 'SOLID' && styles[i].paints[0].opacity === 1 ) {
+            // Intro line for each description
+            let description = `Color contrast with...
+`
+
+            for(let x = 0; x < textStyles.length; x++) {
+                // Get the RGB values of the text and background color pair
+                textColors[x] = getRGB(textStyles[x].paints[0].color)
+                backgroundColors[x] = getRGB(styles[i].paints[0].color)
+
+                // Get the color contrast of this color pair
+                contrast[x] = calculateContrast(textColors[x], 1, backgroundColors[x])
+                score[x] = getContrastScores(contrast[x])
+
+                description += textStyles[x].name + `: ` + score[x] + ` (`+ contrast[x] + `)
+`
+            }
+            styles[i].description = description
+
+            descriptionsAdded++;
+        }
+    }
+
+    figma.notify("Updated color contrast for " + descriptionsAdded + " color styles! 🎉")
 
     figma.closePlugin()
 }
-
-// figma.ui.onmessage = (cancel) => {
-//     figma.notify("Closed plugin")
-
-//     figma.closePlugin()
-// }
-
