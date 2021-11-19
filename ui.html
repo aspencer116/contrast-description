@@ -1,43 +1,231 @@
 <style>
-  body {
-    font-family: 'Inter', sans-serif;
-  }
-  h1 {
-    font-weight: 600;
-    font-size: 18px;
-    letter-spacing: 0.1px;
+  :root {
+    /* COLORS */
+    /* Accent */
+    --blue: #18a0fb;
+    --purple: #7b61ff;
+    --hot-pink: #ff00ff;
+    --green: #1bc47d;
+    --red: #f24822;
+    --yellow: #ffeb00;
+    /* Basic foreground */
+    --black: #000000;
+    --black8: rgba(0, 0, 0, .8);
+    --black8-opaque: #333333;
+    --black3: rgba(0, 0, 0, .3);
+    --black3-opaque: #B3B3B3;
+    --white: #ffffff;
+    --white8: rgba(255, 255, 255, .8);
+    --white4: rgba(255, 255, 255, .4);
+    /* Basic background */
+    --grey: #f0f0f0;
+    --silver: #e5e5e5;
+    --hud: #222222;
+    --toolbar: #2c2c2c;
+    /* Special */
+    --black1: rgba(0, 0, 0, .1);
+    --blue3: rgba(24, 145, 251, .3);
+    --purple4: rgba(123, 97, 255, .4);
+    --hover-fill: rgba(0, 0, 0, .06);
+    --selection-a: #daebf7;
+    --selection-b: #edf5fa;
+    --white2: rgba(255, 255, 255, .2);
+    /* TYPOGRAPHY */
+    /* Pos = positive applications (black on white) */
+    /* Neg = negative applications (white on black) */
+    /* Font stack */
+    --font-stack: 'Inter', sans-serif;
+    /* Font sizes */
+    --font-size-xsmall: 11px;
+    --font-size-small: 12px;
+    --font-size-large: 13px;
+    --font-size-xlarge: 14px;
+    /* Font weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 600;
+    /* Lineheight */
+    --font-line-height: 16px;
+    /* Use For xsmall, small font sizes */
+    --font-line-height-large: 24px;
+    /* Use For large, xlarge font sizes */
+    /* Letterspacing */
+    --font-letter-spacing-pos-xsmall: .005em;
+    --font-letter-spacing-neg-xsmall: .01em;
+    --font-letter-spacing-pos-small: 0;
+    --font-letter-spacing-neg-small: .005em;
+    --font-letter-spacing-pos-large: -.0025em;
+    --font-letter-spacing-neg-large: .0025em;
+    --font-letter-spacing-pos-xlarge: -.001em;
+    --font-letter-spacing-neg-xlarge: -.001em;
+    /* BORDER RADIUS */
+    --border-radius-small: 2px;
+    --border-radius-med: 5px;
+    --border-radius-large: 6px;
+    /* SHADOWS */
+    --shadow-hud: 0 5px 17px rgba(0, 0, 0, .2), 0 2px 7px rgba(0, 0, 0, .15);
+    --shadow-floating-window: 0 2px 14px rgba(0, 0, 0, .15);
+    /* SPACING + SIZING */
+    --size-xxxsmall: 4px;
+    --size-xxsmall: 8px;
+    --size-xsmall: 16px;
+    --size-small: 24px;
+    --size-medium: 32px;
+    --size-large: 40px;
+    --size-xlarge: 48px;
+    --size-xxlarge: 64px;
+    --size-xxxlarge: 80px;
   }
 
-  p {
-    font-size: 12px;
+  body {
+    position: relative;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+  }
+
+  .section {
+    padding: 1rem 0.75rem 0.75rem;
+  }
+
+  .section--intro {
+    box-shadow: 0 1px 0 0 rgb(0 0 0 / 10%);
+  }
+
+  .heading {
+    font-weight: 600;
+    font-size: var(--font-size-xlarge);
+    letter-spacing: 0.1px;
+    margin: 0 0 var(--size-xxsmall);
+  }
+
+  .text {
+    font-size: var(--font-size-xsmall);
     font-weight: 400;
     letter-spacing: 0.055px;
+    margin: 0 0 var(--size-xsmall);
   }
 
-  button {
+  .text--list-item {
+    margin: 0 0 var(--size-xxsmall) var(--size-xsmall);
+  }
+
+  .text-list {
+    margin: 0;
+    padding: 0;
+  }
+
+  .styles-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 var(--size-small);
+  }
+
+  .checkbox {
+    align-items: center;
+    cursor: default;
+    display: flex;
+    height: var(--size-medium);
+    position: relative;
+  }
+
+  .checkbox__box {
+    opacity: 0;
+    width: 10px;
+    height: 10px;
+    margin: 0;
+    padding: 0;
+    flex: 0;
+  }
+
+  .checkbox__label {
+    align-items: center;
+    color: var(--black8);
+    display: flex;
+    font-family: var(--font-stack);
+    font-size: var(--font-size-xsmall);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--font-line-height);
+    letter-spacing: var(--font-letter-spacing-pos-xsmall);
+    margin-left: -16px;
+    padding: 0.25rem var(--size-xsmall) 0.25rem var(--size-small);
+    height: 100%;
+    -webkit-user-select: none;
+      -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+  }
+
+  .checkbox__label:before {
+    border: 1px solid var(--black8);
+    border-radius: var(--border-radius-small);
+    content: '';
     display: block;
-    margin-left: auto;
-    padding: 0.5rem 1rem;
-    margin-top: 1rem;
-    border: none;
-    font-size: 12px;
-    font-weight: 600;
-    color: #FFFFFF;
-    background-color: #000000;
+    width: 10px;
+    height: 10px;
+    margin: -1px 10px 0 -8px;
+    box-shadow: none;
   }
 
-  button:hover {
-    background-color: #333333;
-    cursor: pointer;
+  .checkbox__box:checked + .checkbox__label:before {
+    background-color: var(--blue);
+    background-image: url("data:image/svg+xml;utf8,%3Csvg%20fill%3D%22none%22%20height%3D%227%22%20viewBox%3D%220%200%208%207%22%20width%3D%228%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20clip-rule%3D%22evenodd%22%20d%3D%22m1.17647%201.88236%201.88235%201.88236%203.76471-3.76472%201.17647%201.17648-4.94118%204.9412-3.05882-3.05884z%22%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: 1px 2px;
+    border: 1px solid var(--blue);
+  }
+
+  .checkbox__box:checked:disabled + .checkbox__label:before {
+    border: 1px solid transparent;
+    background-color: var(--black8);
+  }
+
+  .button {
+    align-items: center;
+    border-radius: var(--border-radius-large);
+    color: var(--white);
+    flex-shrink: 0;
+    font-family: var(--font-stack);
+    font-size: var(--font-size-xsmall);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--font-letter-spacing-neg-small);
+    line-height: var(--font-line-height);
+    height: var(--size-medium);
+    padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
+    text-decoration: none;
+    outline: none;
+    border: 2px solid transparent;
+    -webkit-user-select: none;
+      -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+  }
+
+  .button--primary {
+    background-color: var(--blue);
+  }
+
+  .button--primary:enabled:active, .button--primary:enabled:focus {
+    border: 2px solid var(--black3);
   }
 </style>
 
-<h1>Select your text colors</h1>
-<p>Running the plugin will add color contrast ratio information for these colors to the description panel of all solid color styles.</p>
+<div class="section section--intro">
+  <h1 class="heading">README 👋</h1>
+  <ul class="text-list">
+    <li class="text text--list-item">The plugin determines the color contrast for all of your text colors against every other color style in the file</li>
+    <li class="text text--list-item">Color contrast information is added to the description of each color style</li>
+    <li class="text text--list-item">Note: currently the pugin will override any other color style descriptions so do not use it if there are currently meaningful descriptions for color styles</li>
+  </ul>
+</div>
+<div class="section">
+  <h2 class="heading">Local Color Styles</h2>
+  <p class="text">Select every color style that is used for text</p>
 
-<ul id="styles-list"></ul>
+  <ul class="styles-list" id="styles-list"></ul>
 
-<button id="create">Create</button>
+  <button class="button button--primary" id="create">Generate Contrast Descriptions</button>
+</div>
 
 <script>
   // Select the ul tag
@@ -52,7 +240,10 @@
       const styleNames = pluginMessage.styleNames;
       // Turn array of names into a single HTML string with li tags
       const rowHTML = styleNames.reduce(
-        (resultString, styleName) => resultString + `<li><input type="checkbox" id="${styleName}"> ${styleName}</li>`,
+        (resultString, styleName) => resultString + `<li><div class="checkbox">
+          <input id="${styleName}" type="checkbox" class="checkbox__box">
+          <label for="${styleName}" class="checkbox__label">${styleName}</label>
+        </div></li>`,
         ""
       );
       // Insert li tags inside the ul

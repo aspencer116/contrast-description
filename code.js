@@ -83,7 +83,7 @@ function getContrastScores(contrast) {
 
 
 // Show the Figma plugin window
-figma.showUI(__html__)
+figma.showUI(__html__, {height: 500})
 
 // Find all the color styles that currently exist in the file
 const styles = figma.getLocalPaintStyles();
