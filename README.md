@@ -1,8 +1,11 @@
 # Figma Plugin: Contrast Description
 
-![color-contrast](https://user-images.githubusercontent.com/19694054/134062490-1220ef25-cd29-4c9d-9e3a-e99c050517d9.png)
 
-The goal of this plugin is to make it easier to know if your text colors pass [WCAG](https://www.w3.org/WAI/WCAG2AAA-Conformance) (Web Content Accessibility Guidelines) contrast guidelines. It automatically adds information on contrast to the description of each color style in your project. This helps everyone working on the file to know which color pairs are safe to use by providing contextual information on color contrast directly in the Figma UI.
+![Uploading Cover.jpg…]()
+
+
+Quickly add [WCAG](https://www.w3.org/WAI/WCAG2AAA-Conformance) (Web Content Accessibility Guidelines) contrast ratio info to your color styles for easy reference right in the color panel. No need to break your design flow to check accessibility, this helps everyone working in the file know which color pairs are safe to use by providing contextual information directly in the Figma UI.
+
 
 ## Credits
 Some resources that helped in the development of this plugin:
@@ -61,7 +64,7 @@ That's it! Visual Studio Code will regenerate the JavaScript file every time you
 
 ## About
 
-Hello, I'm Andrew, a product designer at [thoughtbot](https://thoughtbot.com/). I've made it a habit of always recording WCAG color contrast for the colors defined in each project. This helps myself and others remember which colors are accessible with different text colors. This also points out colors that might not be accessible with any text or only with text of a certain size (AA Large).
+Hello, I'm Andrew, a product designer at [thoughtbot](https://thoughtbot.com/). I've made it a habit of always recording WCAG color contrast for the colors defined in each project. Hopefully this plugin can help you do the same by automating the process!
 
 I'm building this plugin in the open, feel free to follow along!
 
