@@ -19,8 +19,8 @@ function HEXtoRGB(HEXcolor) {
     return aRgb;
 }
 
+// Use this formula to calculate luminance https://www.w3.org/WAI/GL/wiki/Relative_luminance
 function calculateLuminance(color) {
-    // Use this formula to calculate luminance https://www.w3.org/WAI/GL/wiki/Relative_luminance
     const normalizedColor = color.map(channel => channel / 255)
     const gammaCorrectedRGB = normalizedColor.map(channel =>
         channel <= 0.03928

@@ -75,6 +75,8 @@
     --size-xlarge: 48px;
     --size-xxlarge: 64px;
     --size-xxxlarge: 80px;
+    /* CUSTOM */
+    --section-padding-horiz: 0.75rem;
   }
 
   body {
@@ -85,10 +87,10 @@
   }
 
   .section {
-    padding: 1rem 0.75rem 0.75rem;
+    padding: 1rem var(--section-padding-horiz) var(--section-padding-horiz);
   }
 
-  .section--intro {
+  .section--with-divider {
     box-shadow: 0 1px 0 0 rgb(0 0 0 / 10%);
   }
 
@@ -115,13 +117,14 @@
     padding: 0;
   }
 
-  .styles-list {
+  .list-reset {
     list-style: none;
-    margin: 0;
-    padding: 0 0 var(--size-small);
+    margin: 0 calc(-1 * var(--section-padding-horiz));
+    padding: 0;
   }
 
   .checkbox {
+    padding-left: var(--section-padding-horiz);
     align-items: center;
     cursor: default;
     display: flex;
@@ -130,15 +133,17 @@
   }
 
   .checkbox__box {
+    padding: 0;
     opacity: 0;
     width: 10px;
     height: 10px;
     margin: 0;
-    padding: 0;
     flex: 0;
   }
 
   .checkbox__label {
+    --offset: 16px;
+
     align-items: center;
     color: var(--black8);
     display: flex;
@@ -147,13 +152,18 @@
     font-weight: var(--font-weight-normal);
     line-height: var(--font-line-height);
     letter-spacing: var(--font-letter-spacing-pos-xsmall);
-    margin-left: -16px;
-    padding: 0.25rem var(--size-xsmall) 0.25rem var(--size-small);
+    margin-left: calc(var(--offset) * -1);
+    padding: 0 var(--size-xsmall) 0 var(--size-small);
     height: 100%;
+    width: calc(100% + var(--offset));
     -webkit-user-select: none;
       -moz-user-select: none;
         -ms-user-select: none;
             user-select: none;
+  }
+
+  .checkbox__label:hover {
+    background-color: #f0f0f0;
   }
 
   .checkbox__label:before {
@@ -180,6 +190,10 @@
     background-color: var(--black8);
   }
 
+  .link {
+    color: inherit;
+  }
+
   .button {
     align-items: center;
     border-radius: var(--border-radius-large);
@@ -192,8 +206,10 @@
     line-height: var(--font-line-height);
     height: var(--size-medium);
     padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
+    margin-top: var(--size-small);
     text-decoration: none;
     outline: none;
+    cursor: pointer;
     border: 2px solid transparent;
     -webkit-user-select: none;
       -moz-user-select: none;
@@ -210,20 +226,27 @@
   }
 </style>
 
-<div class="section section--intro">
+<div class="section section--with-divider">
   <h1 class="heading">README 👋</h1>
   <ul class="text-list">
     <li class="text text--list-item">The plugin determines the color contrast for all of your text colors against every other color style in the file</li>
     <li class="text text--list-item">Color contrast information is added to the description of each color style</li>
-    <li class="text text--list-item">Note: currently the pugin will override any other color style descriptions so do not use it if there are currently meaningful descriptions for color styles</li>
   </ul>
 </div>
-<div class="section">
+<div class="section section--with-divider">
   <h2 class="heading">Local Color Styles</h2>
-  <p class="text">Select every color style that is used for text</p>
-
-  <ul class="styles-list" id="styles-list"></ul>
-
+  <p class="text">Select every color style that is used for text. <a class="link" href="https://webaim.org/articles/contrast/#ratio">Accessibility contrast information</a> for these colors will be added to the description of each local color style.</p>
+  <ul class="list-reset" id="styles-list"></ul>
+</div>
+<div class="section">
+  <ul class="list-reset" id="ammend-description-list">
+    <li>
+      <div class="checkbox">
+        <input id="ammend-description" type="checkbox" class="checkbox__box">
+        <label for="ammend-description" class="checkbox__label">Ammend current color descriptions instead of overriding them</label>
+      </div>
+    </li>
+  </ul>
   <button class="button button--primary" id="create">Generate Contrast Descriptions</button>
 </div>
 
