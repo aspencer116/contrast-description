@@ -1,7 +1,7 @@
 {
   "name": "contrast-description",
   "version": "1.0.0",
-  "description": "Your Figma plugin",
+  "description": "Quickly add WCAG contrast ratio info to your color styles for easy reference right in the color panel. No need to break your design flow to check accessibility, this helps everyone working in the file know which color pairs are safe to use by providing contextual information directly in the Figma UI.",
   "main": "code.js",
   "scripts": {
     "build": "tsc -p tsconfig.json"
