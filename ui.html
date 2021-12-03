@@ -258,8 +258,8 @@
   <ul class="list-reset" id="amend-description-list">
     <li>
       <div class="checkbox">
-        <input id="amend-description" type="checkbox" class="checkbox__box">
-        <label for="amend-description" class="checkbox__label">Keep existing color descriptions</label>
+        <input id="replace-description" type="checkbox" class="checkbox__box">
+        <label for="replace-description" class="checkbox__label">Replace existing color descriptions</label>
       </div>
     </li>
   </ul>
@@ -299,10 +299,10 @@
       selectedColors[i] = selectedInputs[i].getAttribute(`id`)
     }
 
-    if(document.querySelector('#amend-description:checked') !== null) {
-      parent.postMessage( { pluginMessage: { type: 'amendDescription', selectedColors } }, '*')
-    } else {
+    if(document.querySelector('#replace-description:checked') !== null) {
       parent.postMessage( { pluginMessage: { type: 'replaceDescription', selectedColors } }, '*')
+    } else {
+      parent.postMessage( { pluginMessage: { type: 'amendDescription', selectedColors } }, '*')
     }
 
   }
