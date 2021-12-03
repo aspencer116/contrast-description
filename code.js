@@ -107,8 +107,9 @@ figma.ui.postMessage({
 });
 
 // When an array of text color styles are returned...
-figma.ui.onmessage = (selectedColors) => {
+figma.ui.onmessage = msg => {
     let descriptionsAdded = 0;
+    let selectedColors = msg;
 
     // Get just the local styles that are used as text colors
     let textStyles = []
@@ -130,7 +131,10 @@ figma.ui.onmessage = (selectedColors) => {
     // Loop through all the color styles in the file
     for(let i = 0; i < styles.length; i++) {
         // Clear the current color style description
-        styles[i].description = `Color contrast unknown`
+        
+        if (msg.type === 'replaceDescription') {
+            styles[i].description = `Color contrast unknown`
+        }
 
         // Loop only solid colors with 100% opacity
         if (styles[i].paints[0].type === 'SOLID' && styles[i].paints[0].opacity === 1 ) {
@@ -150,12 +154,21 @@ figma.ui.onmessage = (selectedColors) => {
                 description += textStyles[x].name + `: ` + score[x] + ` (`+ contrast[x] + `)
 `
             }
-            styles[i].description = description
+
+            if (msg.type === 'amendDescription' && styles[i].description !== '') {
+                // Amend existing color descriptions with space between
+                styles[i].description = styles[i].description + `
+
+` + description
+            } else {
+                // Replace existing color descriptions
+                styles[i].description = description
+            }
 
             descriptionsAdded++;
         }
     }
-
+    
     figma.notify("Updated color contrast for " + descriptionsAdded + " color styles! 🎉")
 
     figma.closePlugin()

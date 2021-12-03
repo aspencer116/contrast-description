@@ -106,6 +106,7 @@
     background: var(--white);
     position: sticky;
     bottom: 0;
+    padding-top: var(--size-xxxsmall);
     box-shadow: 0 -1px 0 0 rgb(0 0 0 / 10%);
   }
 
@@ -221,7 +222,7 @@
     line-height: var(--font-line-height);
     height: var(--size-medium);
     padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
-    margin-top: var(--size-xsmall);
+    margin-top: var(--size-xxsmall);
     text-decoration: none;
     outline: none;
     border: 2px solid transparent;
@@ -254,11 +255,11 @@
   </div>
 </div>
 <div class="section container--sticky">
-  <ul class="list-reset" id="ammend-description-list">
+  <ul class="list-reset" id="amend-description-list">
     <li>
       <div class="checkbox">
-        <input id="ammend-description" type="checkbox" class="checkbox__box">
-        <label for="ammend-description" class="checkbox__label">Ammend current color descriptions instead of overriding them</label>
+        <input id="amend-description" type="checkbox" class="checkbox__box">
+        <label for="amend-description" class="checkbox__label">Keep existing color descriptions</label>
       </div>
     </li>
   </ul>
@@ -291,13 +292,18 @@
 
   // Send selected colors to the code.js
   document.getElementById('create').onclick = () => {
-    const selectedInputs = document.querySelectorAll('input[type="checkbox"]:checked');
-    let selectedColors = [];
+    const selectedInputs = document.querySelectorAll('#styles-list input[type="checkbox"]:checked')
+    let selectedColors = []
 
     for (let i = 0; i < selectedInputs.length; i++) {
       selectedColors[i] = selectedInputs[i].getAttribute(`id`)
     }
 
-    parent.postMessage({ pluginMessage: { type: 'selectedColors', selectedColors } }, '*')
+    if(document.querySelector('#amend-description:checked') !== null) {
+      parent.postMessage( { pluginMessage: { type: 'amendDescription', selectedColors } }, '*')
+    } else {
+      parent.postMessage( { pluginMessage: { type: 'replaceDescription', selectedColors } }, '*')
+    }
+
   }
 </script>
