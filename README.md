@@ -1,14 +1,14 @@
-# BETA Figma Plugin: Contrast Description
+# Figma Plugin: Contrast Description
 
 ![color-contrast](https://user-images.githubusercontent.com/19694054/134062490-1220ef25-cd29-4c9d-9e3a-e99c050517d9.png)
 
-The goal of this plugin is to make it easier to know if your color style pairings pass [WCAG](https://www.w3.org/WAI/WCAG2AAA-Conformance) (Web Content Accessibility Guidelines) color contrast guidelines. It automatically adds information on color contrast to the description of each color style in your project. This helps everyone working on the file to know which color pairs are safe to use by providing contextual information on color contrast directly in the Figma UI.
+The goal of this plugin is to make it easier to know if your text colors pass [WCAG](https://www.w3.org/WAI/WCAG2AAA-Conformance) (Web Content Accessibility Guidelines) contrast guidelines. It automatically adds information on contrast to the description of each color style in your project. This helps everyone working on the file to know which color pairs are safe to use by providing contextual information on color contrast directly in the Figma UI.
 
-Here is the plan for building this plugin:
-- [x]  Running a plugin adds a generic description to all local color styles
-- [x]  Check the color contrast of each color style against #FFFFFF and #000000
-- [ ]  Allow the user to input their own values for white and black text to check color contrast
-- [ ]  Allow the user to input any number of color values to be added to the description
+## Credits
+Some resources that helped in the development of this plugin:
+- [Dan Hollick](https://alcohollick.com/)'s [Figma plugin tutorial](https://alcohollick.com/writing/figma-plugin-tutorial-4-6) with formulas to calculate contrast
+- [Roamn Shamin](https://twitter.com/romanshamin)'s article [Building a Color System Plugin](https://evilmartians.com/chronicles/figma-diy-building-a-color-system-plugin)
+
 
 ---
 
