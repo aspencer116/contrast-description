@@ -80,6 +80,9 @@
   }
 
   body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     position: relative;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
@@ -88,10 +91,15 @@
 
   .section {
     padding: 1rem var(--section-padding-horiz) var(--section-padding-horiz);
+    flex: 0 0 auto;
   }
 
   .section--with-divider {
     box-shadow: 0 1px 0 0 rgb(0 0 0 / 10%);
+  }
+
+  .section--fill-space {
+    flex-grow: 1;
   }
 
   .heading {
@@ -153,8 +161,7 @@
     line-height: var(--font-line-height);
     letter-spacing: var(--font-letter-spacing-pos-xsmall);
     margin-left: calc(var(--offset) * -1);
-    padding: 0 var(--size-xsmall) 0 var(--size-small);
-    height: 100%;
+    padding: var(--size-xxsmall) var(--size-xsmall) var(--size-xxsmall) 2.25rem;
     width: calc(100% + var(--offset));
     -webkit-user-select: none;
       -moz-user-select: none;
@@ -167,13 +174,13 @@
   }
 
   .checkbox__label:before {
+    position: absolute;
+    left: var(--section-padding-horiz);
     border: 1px solid var(--black8);
     border-radius: var(--border-radius-small);
     content: '';
-    display: block;
     width: 10px;
     height: 10px;
-    margin: -1px 10px 0 -8px;
     box-shadow: none;
   }
 
@@ -199,6 +206,7 @@
     border-radius: var(--border-radius-large);
     color: var(--white);
     flex-shrink: 0;
+    width: 100%;
     font-family: var(--font-stack);
     font-size: var(--font-size-xsmall);
     font-weight: var(--font-weight-medium);
@@ -209,7 +217,6 @@
     margin-top: var(--size-small);
     text-decoration: none;
     outline: none;
-    cursor: pointer;
     border: 2px solid transparent;
     -webkit-user-select: none;
       -moz-user-select: none;
@@ -227,15 +234,14 @@
 </style>
 
 <div class="section section--with-divider">
-  <h1 class="heading">README 👋</h1>
+  <h1 class="heading">Directions</h1>
   <ul class="text-list">
-    <li class="text text--list-item">The plugin determines the color contrast for all of your text colors against every other color style in the file</li>
-    <li class="text text--list-item">Color contrast information is added to the description of each color style</li>
+    <li class="text text--list-item">Select every local color style that is used for text.</li>
+    <li class="text text--list-item"><a class="link" href="https://webaim.org/articles/contrast/#ratio">Accessibility contrast information</a> for these colors will be added to the description of each local color style.</li>
   </ul>
 </div>
-<div class="section section--with-divider">
+<div class="section section--with-divider section--fill-space">
   <h2 class="heading">Local Color Styles</h2>
-  <p class="text">Select every color style that is used for text. <a class="link" href="https://webaim.org/articles/contrast/#ratio">Accessibility contrast information</a> for these colors will be added to the description of each local color style.</p>
   <ul class="list-reset" id="styles-list"></ul>
 </div>
 <div class="section">
