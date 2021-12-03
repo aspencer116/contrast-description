@@ -98,8 +98,15 @@
     box-shadow: 0 1px 0 0 rgb(0 0 0 / 10%);
   }
 
-  .section--fill-space {
-    flex-grow: 1;
+  .container--scrolls {
+    flex: 1 1 auto;
+  }
+  .container--sticky {
+    flex: 0;
+    background: var(--white);
+    position: sticky;
+    bottom: 0;
+    box-shadow: 0 -1px 0 0 rgb(0 0 0 / 10%);
   }
 
   .heading {
@@ -214,7 +221,7 @@
     line-height: var(--font-line-height);
     height: var(--size-medium);
     padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
-    margin-top: var(--size-small);
+    margin-top: var(--size-xsmall);
     text-decoration: none;
     outline: none;
     border: 2px solid transparent;
@@ -233,18 +240,20 @@
   }
 </style>
 
-<div class="section section--with-divider">
-  <h1 class="heading">Directions</h1>
-  <ul class="text-list">
-    <li class="text text--list-item">Select every local color style that is used for text.</li>
-    <li class="text text--list-item"><a class="link" href="https://webaim.org/articles/contrast/#ratio">Accessibility contrast information</a> for these colors will be added to the description of each local color style.</li>
-  </ul>
+<div class="container--scrolls">
+  <div class="section section--with-divider">
+    <h1 class="heading">Directions</h1>
+    <ul class="text-list">
+      <li class="text text--list-item">Select every local color style that is used for text.</li>
+      <li class="text text--list-item"><a class="link" href="https://webaim.org/articles/contrast/#ratio">Accessibility contrast information</a> for these colors will be added to the description of each local color style.</li>
+    </ul>
+  </div>
+  <div class="section">
+    <h2 class="heading">Local Color Styles</h2>
+    <ul class="list-reset" id="styles-list"></ul>
+  </div>
 </div>
-<div class="section section--with-divider section--fill-space">
-  <h2 class="heading">Local Color Styles</h2>
-  <ul class="list-reset" id="styles-list"></ul>
-</div>
-<div class="section">
+<div class="section container--sticky">
   <ul class="list-reset" id="ammend-description-list">
     <li>
       <div class="checkbox">
