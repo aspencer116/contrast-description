@@ -1,8 +1,6 @@
 # Figma Plugin: Contrast Description
 
-
-![Uploading Cover.jpg…]()
-
+![Cover](https://user-images.githubusercontent.com/19694054/144676188-ff1bd55e-cea7-4cef-a40e-ba01738f4246.jpg)
 
 Quickly add [WCAG](https://www.w3.org/WAI/WCAG2AAA-Conformance) (Web Content Accessibility Guidelines) contrast ratio info to your color styles for easy reference right in the color panel. No need to break your design flow to check accessibility, this helps everyone working in the file know which color pairs are safe to use by providing contextual information directly in the Figma UI.
 
