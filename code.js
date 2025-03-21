@@ -61,115 +61,113 @@ function calculateContrast(foreground, alpha, background) {
     return contrast
 }
 
-function getContrastScores(contrast) {
-    let score
+async function fetchStylesAndVariables() {
+    const styles = await figma.getLocalPaintStylesAsync();
+    const localVariables = await figma.variables.getLocalVariablesAsync('COLOR');
 
-    switch (true) {
-        case contrast > 7:
-        score = 'AAA'
-        break
-        case contrast > 4.5:
-        score = 'AA'
-        break
-        case contrast > 3:
-        score = 'AA Large'
-        break
-        default:
-        score = 'FAIL'
-        break
-    }
-    return score
+    return { styles, localVariables };
 }
 
+// Main function to process styles and calculate contrast scores
+async function main() {
+    const { styles, localVariables } = await fetchStylesAndVariables();
 
-// Show the Figma plugin window
-figma.showUI(__html__, {height: 500})
+    let styleNames = [];
+    let variableNames = [];
 
-// Find all the color styles that currently exist in the file
-const styles = figma.getLocalPaintStyles();
-let styleNames = [];
+    // Only send solid color styles that have no transparency since these are the only
+    // values we can accurately determine color contrast for
+    for (let i = 0; i < styles.length; i++) {
+        let type = styles[i].paints[0].type;
+        let opacity = styles[i].paints[0].opacity;
 
-// Only send solid color styles that have no transparency since these are the only
-// values we can accurately determine color contrast for
-for (let i = 0; i < styles.length; i++) {
-    let type = styles[i].paints[0].type
-    let opacity = styles[i].paints[0].opacity
-
-    if (type === 'SOLID' && opacity === 1 ) {
-        styleNames.push(styles[i].name)
-    }
-}
-
-// Send the color styles to the plugin UI
-figma.ui.postMessage({
-    type: "render",
-    styleNames,
-});
-
-// When an array of text color styles are returned...
-figma.ui.onmessage = msg => {
-    let descriptionsAdded = 0;
-    let selectedColors = msg;
-
-    // Get just the local styles that are used as text colors
-    let textStyles = []
-
-    // Map the color names returned from the plugin UI to color style objects
-    for(let i = 0; i < selectedColors.selectedColors.length; i++) {
-        for(let x = 0; x < styles.length; x++) {
-            if( styles[x].name === selectedColors.selectedColors[i] ) {
-                textStyles.push(styles[x])
-            }
+        if (type === 'SOLID' && opacity === 1) {
+            styleNames.push(styles[i].name);
         }
     }
 
-    let textColors = []
-    let backgroundColors = []
-    let contrast = []
-    let score = []
-
-    // Loop through all the color styles in the file
-    for(let i = 0; i < styles.length; i++) {
-        // Clear the current color style description
-        
-        if (msg.type === 'replaceDescription') {
-            styles[i].description = `Color contrast unknown`
-        }
-
-        // Loop only solid colors with 100% opacity
-        if (styles[i].paints[0].type === 'SOLID' && styles[i].paints[0].opacity === 1 ) {
-            // Intro line for each description
-            let description = `Color contrast with...
-`
-
-            for(let x = 0; x < textStyles.length; x++) {
-                // Get the RGB values of the text and background color pair
-                textColors[x] = getRGB(textStyles[x].paints[0].color)
-                backgroundColors[x] = getRGB(styles[i].paints[0].color)
-
-                // Get the color contrast of this color pair
-                contrast[x] = calculateContrast(textColors[x], 1, backgroundColors[x])
-                score[x] = getContrastScores(contrast[x])
-
-                description += textStyles[x].name + `: ` + score[x] + ` (`+ contrast[x] + `)
-`
-            }
-
-            if (msg.type === 'amendDescription' && styles[i].description !== '') {
-                // Amend existing color descriptions with space between
-                styles[i].description = styles[i].description + `
-
-` + description
-            } else {
-                // Replace existing color descriptions
-                styles[i].description = description
-            }
-
-            descriptionsAdded++;
-        }
+    for (let i = 0; i < localVariables.length; i++) {
+        variableNames.push(localVariables[i].name);
     }
-    
-    figma.notify("Updated color contrast for " + descriptionsAdded + " color styles! 🎉")
 
-    figma.closePlugin()
+    console.log(localVariables.length);
+    console.log(variableNames.length);
+
+    // Send the color styles to the plugin UI
+    figma.ui.postMessage({
+        type: "render",
+        styleNames,
+        variableNames,
+    });
+
+    // Handle messages from the plugin UI
+    figma.ui.onmessage = async (msg) => {
+        let descriptionsAdded = 0;
+        let selectedColors = msg;
+
+        // Get just the local styles that are used as text colors
+        let textStyles = [];
+
+        // Map the color names returned from the plugin UI to color style objects
+        for (let i = 0; i < selectedColors.selectedColors.length; i++) {
+            for (let x = 0; x < styles.length; x++) {
+                if (styles[x].name === selectedColors.selectedColors[i]) {
+                    textStyles.push(styles[x]);
+                }
+            }
+        }
+
+        let textColors = [];
+        let backgroundColors = [];
+        let contrast = [];
+        let score = [];
+
+        // Loop through all the color styles in the file
+        for (let i = 0; i < styles.length; i++) {
+            // Clear the current color style description
+            if (msg.type === 'replaceDescription') {
+                styles[i].description = `Color contrast unknown`;
+            }
+
+            // Loop only solid colors with 100% opacity
+            if (styles[i].paints[0].type === 'SOLID' && styles[i].paints[0].opacity === 1) {
+                // Intro line for each description
+                let description = `Color contrast with...
+`;
+
+                for (let x = 0; x < textStyles.length; x++) {
+                    // Get the RGB values of the text and background color pair
+                    textColors[x] = getRGB(textStyles[x].paints[0].color);
+                    backgroundColors[x] = getRGB(styles[i].paints[0].color);
+
+                    // Get the color contrast of this color pair
+                    contrast[x] = calculateContrast(textColors[x], 1, backgroundColors[x]);
+                    score[x] = getContrastScores(contrast[x]);
+
+                    description += textStyles[x].name + `: ` + score[x] + ` (` + contrast[x] + `)
+`;
+                }
+
+                if (msg.type === 'amendDescription' && styles[i].description !== '') {
+                    // Amend existing color descriptions with space between
+                    styles[i].description = styles[i].description + `
+
+` + description;
+                } else {
+                    // Replace existing color descriptions
+                    styles[i].description = description;
+                }
+
+                descriptionsAdded++;
+            }
+        }
+
+        figma.notify("Updated color contrast for " + descriptionsAdded + " color styles! 🎉");
+
+        figma.closePlugin();
+    };
 }
+
+// Show the Figma plugin window and start the main function
+figma.showUI(__html__, { height: 500 });
+main();

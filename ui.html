@@ -171,14 +171,18 @@
     margin-left: calc(var(--offset) * -1);
     padding: var(--size-xxsmall) var(--size-xsmall) var(--size-xxsmall) 2.25rem;
     width: calc(100% + var(--offset));
+    border-radius: var(--radius-medium);
     -webkit-user-select: none;
-      -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    cursor: pointer;
+    transition: all ease 50ms;
   }
 
   .checkbox__label:hover {
-    background-color: #f0f0f0;
+    background-color: #F5F5F5;
   }
 
   .checkbox__label:before {
@@ -253,6 +257,10 @@
     <h2 class="heading">Local Color Styles</h2>
     <ul class="list-reset" id="styles-list"></ul>
   </div>
+  <div class="section">
+    <h2 class="heading">Local Color Variables</h2>
+    <ul class="list-reset" id="variables-list"></ul>
+  </div>
 </div>
 <div class="section container--sticky">
   <ul class="list-reset" id="amend-description-list">
@@ -269,6 +277,7 @@
 <script>
   // Select the ul tag
   const stylesListElement = document.getElementById("styles-list");
+  const varListElement = document.getElementById("variables-list");
 
   // Handle incoming message from code.js
   onmessage = ({ data: { pluginMessage } }) => {
@@ -277,6 +286,8 @@
     if (messageType === "render") {
       // Get an array of style names from the message
       const styleNames = pluginMessage.styleNames;
+      const variableNames = pluginMessage.variableNames;
+    
       // Turn array of names into a single HTML string with li tags
       const rowHTML = styleNames.reduce(
         (resultString, styleName) => resultString + `<li><div class="checkbox">
@@ -285,8 +296,18 @@
         </div></li>`,
         ""
       );
+
+      const rowHTMLvar = variableNames.reduce(
+        (resultString, variableNames) => resultString + `<li><div class="checkbox">
+          <input id="${variableNames}" type="checkbox" class="checkbox__box">
+          <label for="${variableNames}" class="checkbox__label">${variableNames}</label>
+        </div></li>`,
+        ""
+      );
+
       // Insert li tags inside the ul
       stylesListElement.innerHTML = rowHTML;
+      varListElement.innerHTML = rowHTMLvar;
     }
   };
 
