@@ -126,9 +126,7 @@ async function main() {
     // Handle messages from the plugin UI
     figma.ui.onmessage = async (msg) => {
         let descriptionsAdded = 0;
-        let selectedColors = msg;
         let varDescriptionsAdded = 0;
-        let selectedVariables = msg;
         
         // If color styles are selected, update their descriptions
         if (msg.selectedColors.length > 0) {
@@ -161,7 +159,7 @@ async function main() {
                 if (styles[i].paints[0].type === 'SOLID' && styles[i].paints[0].opacity === 1) {
                     // Intro line for each description
                     let description = `Color contrast with...
-    `;
+`;
 
                     for (let x = 0; x < textStyles.length; x++) {
                         // Get the RGB values of the text and background color pair
@@ -173,14 +171,14 @@ async function main() {
                         score[x] = getContrastScores(contrast[x]);
 
                         description += textStyles[x].name + `: ` + score[x] + ` (` + contrast[x] + `)
-    `;
+`;
                     }
 
                     if (msg.type === 'amendDescription' && styles[i].description !== '') {
                         // Amend existing color descriptions with space between
                         styles[i].description = styles[i].description + `
 
-    ` + description;
+` + description;
                     } else {
                         // Replace existing color descriptions
                         styles[i].description = description;
@@ -199,6 +197,7 @@ async function main() {
 
             // Get just the local variables that are used as text variable colors
             let textVars = [];
+            let textVarsName = [];
             let modeId = localVariableCollections[0].modes[0].modeId; // Get the mode ID of the desired mode
 
             // Map the color names returned from the plugin UI to color style objects
@@ -206,8 +205,7 @@ async function main() {
                 for (let x = 0; x < localVariables.length; x++) {
                     if (localVariables[x].name === msg.selectedVariables[i]) {
                         textVars.push(localVariables[x].valuesByMode[modeId]);
-
-                        console.log('VAR NAMES: ' + localVariables[x].name);
+                        textVarsName.push(localVariables[x].name);
                     }
                 }
             }
@@ -225,34 +223,28 @@ async function main() {
             for (let i = 0; i < localVariables.length; i++) {
                 // Intro line for each description
                 let varDescription = `Color contrast with...
-    `;
-                console.log("textVars: " + textVars.length);
+`;
 
+                console.log(`localVariable: ` + i);
 
                 for (let x = 0; x < textVars.length; x++) {
                     // Get the RGB values of the text and background color pair
                     textVarsRGB[x] = getRGBVar(textVars[x]);
-                    backgroundVarsRGB[x] = getRGBVar(localVariables[x].valuesByMode[modeId]);
-
-                    console.log("textVarsRGB: " + textVarsRGB[x]);
-                    console.log("backgroundVarsRGB: " + backgroundVarsRGB[x]);
+                    backgroundVarsRGB[x] = getRGBVar(localVariables[i].valuesByMode[modeId]);
 
                     // Get the color contrast of this color pair
                     varContrast[x] = calculateContrast(textVarsRGB[x], 1, backgroundVarsRGB[x]);
-
-                    console.log(varContrast[x]);
-
                     varScore[x] = getContrastScores(varContrast[x]);
 
-                    varDescription += localVariables[x].name + `: ` + varScore[x] + ` (` + varContrast[x] + `)
-    `;
+                    varDescription += textVarsName[x] + `: ` + varScore[x] + ` (` + varContrast[x] + `)
+`;
                 }
 
                 if (msg.type === 'amendDescription' && localVariables[i].description !== '') {
                     // Amend existing color descriptions with space between
                     localVariables[i].description = localVariables[i].description + `
 
-    ` + varDescription;
+` + varDescription;
                 } else {
                     // Replace existing color descriptions
                     localVariables[i].description = varDescription;
