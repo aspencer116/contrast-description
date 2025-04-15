@@ -1,6 +1,11 @@
 // Convert the rgb values from fractions to numbers between 0 and 255
 function getRGB({ r, g, b }) {
-    const rgbColorArray = [r, g, b].map(channel => Math.round(channel * 255))
+    const rgbColorArray = [r, g, b].map(channel => Math.round(channel * 255));
+    return rgbColorArray
+}
+
+function getRGBVar(colorVar) {
+    const rgbColorArray = [colorVar.r, colorVar.g, colorVar.b].map(channel => Math.round(channel * 255));
     return rgbColorArray
 }
 
@@ -61,16 +66,37 @@ function calculateContrast(foreground, alpha, background) {
     return contrast
 }
 
+function getContrastScores(contrast) {
+    let score
+
+    switch (true) {
+        case contrast > 7:
+        score = 'AAA'
+        break
+        case contrast > 4.5:
+        score = 'AA'
+        break
+        case contrast > 3:
+        score = 'AA Large'
+        break
+        default:
+        score = 'FAIL'
+        break
+    }
+    return score
+}
+
 async function fetchStylesAndVariables() {
     const styles = await figma.getLocalPaintStylesAsync();
     const localVariables = await figma.variables.getLocalVariablesAsync('COLOR');
+    const localVariableCollections = await figma.variables.getLocalVariableCollectionsAsync();
 
-    return { styles, localVariables };
+    return { styles, localVariables, localVariableCollections };
 }
 
 // Main function to process styles and calculate contrast scores
 async function main() {
-    const { styles, localVariables } = await fetchStylesAndVariables();
+    const { styles, localVariables, localVariableCollections } = await fetchStylesAndVariables();
 
     let styleNames = [];
     let variableNames = [];
@@ -90,9 +116,6 @@ async function main() {
         variableNames.push(localVariables[i].name);
     }
 
-    console.log(localVariables.length);
-    console.log(variableNames.length);
-
     // Send the color styles to the plugin UI
     figma.ui.postMessage({
         type: "render",
@@ -104,70 +127,148 @@ async function main() {
     figma.ui.onmessage = async (msg) => {
         let descriptionsAdded = 0;
         let selectedColors = msg;
+        let varDescriptionsAdded = 0;
+        let selectedVariables = msg;
+        
+        // If color styles are selected, update their descriptions
+        if (msg.selectedColors.length > 0) {
 
-        // Get just the local styles that are used as text colors
-        let textStyles = [];
+            // Get just the local styles that are used as text style colors
+            let textStyles = [];
 
-        // Map the color names returned from the plugin UI to color style objects
-        for (let i = 0; i < selectedColors.selectedColors.length; i++) {
-            for (let x = 0; x < styles.length; x++) {
-                if (styles[x].name === selectedColors.selectedColors[i]) {
-                    textStyles.push(styles[x]);
+            // Map the color names returned from the plugin UI to color style objects
+            for (let i = 0; i < msg.selectedColors.length; i++) {
+                for (let x = 0; x < styles.length; x++) {
+                    if (styles[x].name === msg.selectedColors[i]) {
+                        textStyles.push(styles[x]);
+                    }
                 }
             }
-        }
 
-        let textColors = [];
-        let backgroundColors = [];
-        let contrast = [];
-        let score = [];
+            let textColors = [];
+            let backgroundColors = [];
+            let contrast = [];
+            let score = [];
 
-        // Loop through all the color styles in the file
-        for (let i = 0; i < styles.length; i++) {
-            // Clear the current color style description
-            if (msg.type === 'replaceDescription') {
-                styles[i].description = `Color contrast unknown`;
+            // Loop through all the color styles in the file
+            for (let i = 0; i < styles.length; i++) {
+                // Clear the current color style description
+                if (msg.type === 'replaceDescription') {
+                    styles[i].description = `Color contrast unknown`;
+                }
+
+                // Loop only solid colors with 100% opacity
+                if (styles[i].paints[0].type === 'SOLID' && styles[i].paints[0].opacity === 1) {
+                    // Intro line for each description
+                    let description = `Color contrast with...
+    `;
+
+                    for (let x = 0; x < textStyles.length; x++) {
+                        // Get the RGB values of the text and background color pair
+                        textColors[x] = getRGB(textStyles[x].paints[0].color);
+                        backgroundColors[x] = getRGB(styles[i].paints[0].color);
+
+                        // Get the color contrast of this color pair
+                        contrast[x] = calculateContrast(textColors[x], 1, backgroundColors[x]);
+                        score[x] = getContrastScores(contrast[x]);
+
+                        description += textStyles[x].name + `: ` + score[x] + ` (` + contrast[x] + `)
+    `;
+                    }
+
+                    if (msg.type === 'amendDescription' && styles[i].description !== '') {
+                        // Amend existing color descriptions with space between
+                        styles[i].description = styles[i].description + `
+
+    ` + description;
+                    } else {
+                        // Replace existing color descriptions
+                        styles[i].description = description;
+                    }
+
+                    descriptionsAdded++;
+                }
             }
 
-            // Loop only solid colors with 100% opacity
-            if (styles[i].paints[0].type === 'SOLID' && styles[i].paints[0].opacity === 1) {
-                // Intro line for each description
-                let description = `Color contrast with...
-`;
+            // Send a notification to the UI about how many color descriptions were added
+            figma.notify("Added color contrast values as a description of " + descriptionsAdded + " color styles! 🎉");
+        }
 
-                for (let x = 0; x < textStyles.length; x++) {
+        // If local variables are selected, update their descriptions
+        if (msg.selectedVariables.length > 0) {
+
+            // Get just the local variables that are used as text variable colors
+            let textVars = [];
+            let modeId = localVariableCollections[0].modes[0].modeId; // Get the mode ID of the desired mode
+
+            // Map the color names returned from the plugin UI to color style objects
+            for (let i = 0; i < msg.selectedVariables.length; i++) {
+                for (let x = 0; x < localVariables.length; x++) {
+                    if (localVariables[x].name === msg.selectedVariables[i]) {
+                        textVars.push(localVariables[x].valuesByMode[modeId]);
+
+                        console.log('VAR NAMES: ' + localVariables[x].name);
+                    }
+                }
+            }
+
+            let textVarsRGB = [];
+            let backgroundVarsRGB = [];
+            let varContrast = [];
+            let varScore = [];
+
+            // TODO
+            // Get the looping of colors to work correct
+            // Ensure it works with colors in multiple modes
+
+            // Loop through all the color variables in the file
+            for (let i = 0; i < localVariables.length; i++) {
+                // Intro line for each description
+                let varDescription = `Color contrast with...
+    `;
+                console.log("textVars: " + textVars.length);
+
+
+                for (let x = 0; x < textVars.length; x++) {
                     // Get the RGB values of the text and background color pair
-                    textColors[x] = getRGB(textStyles[x].paints[0].color);
-                    backgroundColors[x] = getRGB(styles[i].paints[0].color);
+                    textVarsRGB[x] = getRGBVar(textVars[x]);
+                    backgroundVarsRGB[x] = getRGBVar(localVariables[x].valuesByMode[modeId]);
+
+                    console.log("textVarsRGB: " + textVarsRGB[x]);
+                    console.log("backgroundVarsRGB: " + backgroundVarsRGB[x]);
 
                     // Get the color contrast of this color pair
-                    contrast[x] = calculateContrast(textColors[x], 1, backgroundColors[x]);
-                    score[x] = getContrastScores(contrast[x]);
+                    varContrast[x] = calculateContrast(textVarsRGB[x], 1, backgroundVarsRGB[x]);
 
-                    description += textStyles[x].name + `: ` + score[x] + ` (` + contrast[x] + `)
-`;
+                    console.log(varContrast[x]);
+
+                    varScore[x] = getContrastScores(varContrast[x]);
+
+                    varDescription += localVariables[x].name + `: ` + varScore[x] + ` (` + varContrast[x] + `)
+    `;
                 }
 
-                if (msg.type === 'amendDescription' && styles[i].description !== '') {
+                if (msg.type === 'amendDescription' && localVariables[i].description !== '') {
                     // Amend existing color descriptions with space between
-                    styles[i].description = styles[i].description + `
+                    localVariables[i].description = localVariables[i].description + `
 
-` + description;
+    ` + varDescription;
                 } else {
                     // Replace existing color descriptions
-                    styles[i].description = description;
+                    localVariables[i].description = varDescription;
                 }
 
-                descriptionsAdded++;
+                varDescriptionsAdded++;
             }
-        }
 
-        figma.notify("Updated color contrast for " + descriptionsAdded + " color styles! 🎉");
+            // Send a notification to the UI about how many variable descriptions were added
+            figma.notify("Added color contrast values as a description of " + varDescriptionsAdded + " color variables! 🎉");
+        }
 
         figma.closePlugin();
     };
 }
 
 // Show the Figma plugin window and start the main function
-figma.showUI(__html__, { height: 500 });
+figma.showUI(__html__, { height: 650 });
 main();

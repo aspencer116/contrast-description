@@ -231,13 +231,21 @@
     outline: none;
     border: 2px solid transparent;
     -webkit-user-select: none;
-      -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    cursor: pointer;
+    transition: all ease 50ms;
   }
 
   .button--primary {
     background-color: var(--blue);
+  }
+  
+  .button--primary:hover {
+    --blue-hover: hsl(from var(--blue) h s calc(l - 5)); 
+    background-color: var(--blue-hover);
   }
 
   .button--primary:enabled:active, .button--primary:enabled:focus {
@@ -313,17 +321,23 @@
 
   // Send selected colors to the code.js
   document.getElementById('create').onclick = () => {
-    const selectedInputs = document.querySelectorAll('#styles-list input[type="checkbox"]:checked')
+    const selectedStyleInputs = document.querySelectorAll('#styles-list input[type="checkbox"]:checked')
+    const selectedVarInputs = document.querySelectorAll('#variables-list input[type="checkbox"]:checked')
     let selectedColors = []
+    let selectedVariables = []
 
-    for (let i = 0; i < selectedInputs.length; i++) {
-      selectedColors[i] = selectedInputs[i].getAttribute(`id`)
+    for (let i = 0; i < selectedStyleInputs.length; i++) {
+      selectedColors[i] = selectedStyleInputs[i].getAttribute(`id`)
+    }
+
+    for (let i = 0; i < selectedVarInputs.length; i++) {
+      selectedVariables[i] = selectedVarInputs[i].getAttribute(`id`)
     }
 
     if(document.querySelector('#replace-description:checked') !== null) {
-      parent.postMessage( { pluginMessage: { type: 'replaceDescription', selectedColors } }, '*')
+      parent.postMessage( { pluginMessage: { type: 'replaceDescription', selectedColors, selectedVariables } }, '*')
     } else {
-      parent.postMessage( { pluginMessage: { type: 'amendDescription', selectedColors } }, '*')
+      parent.postMessage( { pluginMessage: { type: 'amendDescription', selectedColors, selectedVariables } }, '*')
     }
 
   }
