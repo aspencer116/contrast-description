@@ -94,7 +94,7 @@ async function fetchStylesAndVariables() {
     return { styles, localVariables, localVariableCollections };
 }
 
-// Main function to process styles and calculate contrast scores
+// Main function to process variables and calculate contrast scores
 async function main() {
     const { styles, localVariables, localVariableCollections } = await fetchStylesAndVariables();
 
@@ -215,18 +215,12 @@ async function main() {
             let varContrast = [];
             let varScore = [];
 
-            // TODO
-            // Get the looping of colors to work correct
-            // Ensure it works with colors in multiple modes
-
             // Loop through all the color variables in the file
             for (let i = 0; i < localVariables.length; i++) {
                 // Intro line for each description
-                let varDescription = `Color contrast with...
+                let varDescription =
+`Color contrast in ` + localVariableCollections[0].modes[0].name + `:
 `;
-
-                console.log(`localVariable: ` + i);
-
                 for (let x = 0; x < textVars.length; x++) {
                     // Get the RGB values of the text and background color pair
                     textVarsRGB[x] = getRGBVar(textVars[x]);
