@@ -219,7 +219,7 @@ async function main() {
             for (let i = 0; i < localVariables.length; i++) {
                 // Intro line for each description
                 let varDescription =
-`Color contrast in ` + localVariableCollections[0].modes[0].name + `:
+`Color contrast with...
 `;
                 for (let x = 0; x < textVars.length; x++) {
                     // Get the RGB values of the text and background color pair
@@ -233,6 +233,8 @@ async function main() {
                     varDescription += textVarsName[x] + `: ` + varScore[x] + ` (` + varContrast[x] + `)
 `;
                 }
+
+                varDescription += `Variable mode: ` + localVariableCollections[0].modes[0].name;
 
                 if (msg.type === 'amendDescription' && localVariables[i].description !== '') {
                     // Amend existing color descriptions with space between
