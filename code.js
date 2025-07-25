@@ -11,7 +11,7 @@ function getRGBVar(colorVar) {
 
 // Convert 6 digit HEX colors into RGB
 function HEXtoRGB(HEXcolor) {
-    if(HEXcolor.length != 6){
+    if (HEXcolor.length != 6) {
         figma.notify("Plugin Failed: Please enter 6 digit HEX colors")
     }
 
@@ -29,8 +29,8 @@ function calculateLuminance(color) {
     const normalizedColor = color.map(channel => channel / 255)
     const gammaCorrectedRGB = normalizedColor.map(channel =>
         channel <= 0.03928
-        ? channel / 12.92
-        : Math.pow((channel + 0.055) / 1.055, 2.4)
+            ? channel / 12.92
+            : Math.pow((channel + 0.055) / 1.055, 2.4)
     )
     const luminance =
         gammaCorrectedRGB[0] * 0.2126 +
@@ -42,7 +42,7 @@ function calculateLuminance(color) {
 // If a color has opacity, calculate a solid color to use for the contrast calculation
 function overlay(foreground, alpha, backgound) {
     const overlaid = foreground.map((channel, i) =>
-      Math.round(channel * alpha + backgound[i] * (1 - alpha))
+        Math.round(channel * alpha + backgound[i] * (1 - alpha))
     )
     return overlaid
 }
@@ -71,17 +71,17 @@ function getContrastScores(contrast) {
 
     switch (true) {
         case contrast > 7:
-        score = 'AAA'
-        break
+            score = 'AAA'
+            break
         case contrast > 4.5:
-        score = 'AA'
-        break
+            score = 'AA'
+            break
         case contrast > 3:
-        score = 'AA Large'
-        break
+            score = 'AA Large'
+            break
         default:
-        score = 'FAIL'
-        break
+            score = 'FAIL'
+            break
     }
     return score
 }
@@ -127,7 +127,7 @@ async function main() {
     figma.ui.onmessage = async (msg) => {
         let descriptionsAdded = 0;
         let varDescriptionsAdded = 0;
-        
+
         // If color styles are selected, update their descriptions
         if (msg.selectedColors.length > 0) {
 
@@ -210,8 +210,6 @@ async function main() {
                 }
             }
 
-            let textVarsRGB = [];
-            let backgroundVarsRGB = [];
             let varContrast = [];
             let varScore = [];
 
@@ -219,19 +217,52 @@ async function main() {
             for (let i = 0; i < localVariables.length; i++) {
                 // Intro line for each description
                 let varDescription =
-`Color contrast with...
+                    `Color contrast with...
 `;
                 for (let x = 0; x < textVars.length; x++) {
                     // Get the RGB values of the text and background color pair
-                    textVarsRGB[x] = getRGBVar(textVars[x]);
-                    backgroundVarsRGB[x] = getRGBVar(localVariables[i].valuesByMode[modeId]);
+                    let textVarsRGB = getRGBVar(textVars[x]);
+                    let backgroundVarsRGB = getRGBVar(localVariables[i].valuesByMode[modeId]);
 
-                    // Get the color contrast of this color pair
-                    varContrast[x] = calculateContrast(textVarsRGB[x], 1, backgroundVarsRGB[x]);
+                    // If the text variable is an alias, get the RGB values of the aliased variable
+                    if (textVars[x].type === 'VARIABLE_ALIAS') {
+                        const aliasedVariableId = textVars[x].id;
+                        let targetVariable = null;
+
+                        for (let x = 0; x < localVariables.length; x++) {
+                            if (localVariables[x].id === aliasedVariableId) {
+                                targetVariable = localVariables[x];
+                            }
+                        }
+
+                        if (targetVariable && targetVariable.resolvedType === 'COLOR') {
+                            textVarsRGB = getRGBVar(targetVariable.valuesByMode[modeId]);
+                        }
+                    }
+
+                    // If the background variable is an alias, get the RGB values of the aliased variable
+                    if (localVariables[i].valuesByMode[modeId].type === 'VARIABLE_ALIAS') {
+                        const aliasedBGVariableId = localVariables[i].valuesByMode[modeId].id;
+                        let targetBGVariable = null;
+
+                        for (let x = 0; x < localVariables.length; x++) {
+                            if (localVariables[x].id === aliasedBGVariableId) {
+                                targetBGVariable = localVariables[x];
+                            }
+                        }
+
+                        if (targetBGVariable && targetBGVariable.resolvedType === 'COLOR') {
+                            backgroundVarsRGB = getRGBVar(targetBGVariable.valuesByMode[modeId]);
+                        }
+                    }
+
+                    // Calculate color contrast
+                    varContrast[x] = calculateContrast(textVarsRGB, 1, backgroundVarsRGB);
                     varScore[x] = getContrastScores(varContrast[x]);
 
                     varDescription += textVarsName[x] + `: ` + varScore[x] + ` (` + varContrast[x] + `)
 `;
+
                 }
 
                 varDescription += `Variable mode: ` + localVariableCollections[0].modes[0].name;
